@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static "styles.css" %}">
+</head>
+<body>
+    <!-- Mobile Toggle Button -->
+    <div class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- New Chat Button -->
+        <button class="new-chat-btn" onclick="window.location.href='{% url 'home' %}'">
+            <i class="fas fa-plus"></i>
+            New chat
+        </button>
+       
+        <!-- Chat History -->
+        <div class="chat-history">
+            <div class="chat-history-title">Today</div>
+            {% for room in rooms %}
+            <div class="chat-item {% if current_room.id == room.id %}active{% endif %}">
+                <a href="{% url 'chat' room.id %}" class="chat-item-content">
+                    <i class="fas fa-message chat-item-icon"></i>
+                    <div class="chat-item-title">
+                        {{room.title|default:"Untitled Chat"}}
+                    </div>
+                </a>
+                <div class="chat-item-actions">
+                        <a href="{% url "delete" room.id %}"><button type="submit" class="chat-item-delete-btn" onclick="return confirm('Delete this chat?')"> 
+                            
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </a>
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-info">
+                <div class="profile-avatar">{{ request.user.username.0|upper }}</div>
+                <div class="profile-name">{{ request.user.username }}</div>
+            </div>
+            
+                
+                <button type="submit" class="logout-btn" title="Log out">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="main-chat">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            {% if current_room %}
+                {{ current_room.title|default:"Untitled Chat" }}
+            {% else %}
+                New Chat
+            {% endif %}
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container">
+            {% block chats %} 
+            {% endblock chats %}
+        </div>
+          
+        <!-- Input Container -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-container">
+                <div class="input-area">
+                    <!-- Upload Image Button - ADDED HERE -->
+                    <button type="button" class="upload-btn"  onclick="document.getElementById('imageUpload').click()">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none;">
+                    
+                    <textarea class="chat-input" required name="text" placeholder="Message ChatGPT..." rows="1"></textarea>
+                    <button class="send-btn" type="submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    ChatGPT can make mistakes. Consider checking important information.
+                </div>
+            </div>
+        </form>
+    </div>
+    
+</body>
+</html>

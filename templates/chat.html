@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+
+{% block chats %} 
+    {% for chat in current_room.chat.all %}
+        <!-- User Message -->
+        <div class="message user">
+            <div class="message-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="message-content">
+                 {% if chat.image %}
+                    <img src="{{ chat.image.url }}" alt="Uploaded image" class="message-image">
+                {% endif %}
+                {{ chat.text }}
+            </div>
+        </div>
+        
+        <!-- Assistant Message -->
+        <div class="message assistant">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                {{ chat.response|linebreaks }}
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-messages">
+            <p>No messages yet. Start a conversation!</p>
+        </div>
+    {% endfor %}
+    <script>
+        // Get the main messages container
+        const messagesContainer = document.querySelector('.messages-container');
+        
+        // Auto scroll to bottom
+        function scrollToBottom() {
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+        
+        // Scroll on load
+        setTimeout(scrollToBottom, 100);
+    </script>
+{% endblock chats %}
